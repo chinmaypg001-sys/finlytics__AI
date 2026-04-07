@@ -535,7 +535,14 @@ export default function ApplyPage() {
       });
 
       if (!response.ok) {
-        throw new Error('GSTIN score lookup failed');
+        let backendMessage = '';
+        try {
+          const payload = await response.json();
+          backendMessage = String(payload?.detail || '').trim();
+        } catch {
+          backendMessage = '';
+        }
+        throw new Error(backendMessage || 'GSTIN score lookup failed');
       }
 
       const data = await response.json();
@@ -566,8 +573,9 @@ export default function ApplyPage() {
         timestamp: new Date().toISOString(),
         read: false,
       });
-    } catch {
-      setGstinError('Could not fetch the explainable GSTIN score.');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '';
+      setGstinError(message || 'Could not fetch the explainable GSTIN score.');
       setGstinResult(null);
     } finally {
       setGstinLoading(false);

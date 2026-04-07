@@ -358,3 +358,43 @@ python -m pytest tests/test_hybrid_scoring.py -v
 **Version:** 2.0.0  
 **Updated:** April 2026  
 **Status:** Production Ready
+
+
+Simple reason:
+
+KYC + authenticity check: GSTIN proves the business is tax-registered.
+Compliance behavior: timely/late GST filing se repayment discipline ka proxy milta hai.
+Cash-flow quality: GST + transaction patterns se business inflow/outflow stability samajh aati hai.
+Fraud detection: linked GSTIN circular transaction patterns pakadne ke liye use hota hai.
+Better lending decision: final output me risk band, PD, recommended loan amount/tenure milta hai.
+Explainability: “top reasons” milte hain, so manager ko decision justify karna easy hota hai.
+
+
+
+
+
+
+Those three cards are financial health indicators used in underwriting:
+
+EBITDA: earnings before interest, tax, depreciation, amortization.
+DSCR: debt service coverage ratio, how comfortably cashflow can cover loan obligations.
+Current Ratio: short-term liquidity, ability to cover current liabilities with current assets.
+In your current software, they are computed as proxy values (not strict accounting statements) in page.tsx:1136:
+
+EBITDA (proxy)
+Code logic: baseProfit = monthlyRevenue × 0.22
+Source: page.tsx:1142
+So displayed EBITDA is basically 22% of monthly revenue, then formatted in lakhs.
+DSCR (proxy)
+Code logic: DSCR = 1.1 + max(final_score - 50, 0) / 40
+Source: page.tsx:1143
+This means DSCR rises when credit final_score rises.
+Current Ratio (proxy)
+Code logic: Current Ratio = 1.2 + (monthlyRevenue / totalDebt) / 2
+Source: page.tsx:1144
+This is a simplified liquidity approximation from revenue vs debt.
+What your screenshot values imply:
+
+EBITDA ₹0.2L means approx ₹20,000 monthly EBITDA proxy.
+DSCR 1.5x means estimated coverage is 1.5 times debt service.
+Current Ratio 1.2x means minimal liquidity buffer.
